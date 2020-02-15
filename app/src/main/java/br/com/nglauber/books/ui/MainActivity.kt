@@ -5,38 +5,49 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.nglauber.books.R
-import br.com.nglauber.books.http.BookHttp
 import br.com.nglauber.books.model.Volume
 import br.com.nglauber.books.ui.adapter.BookAdapter
+import br.com.nglauber.books.ui.viewmodel.BookListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
+
+    private val viewModel: BookListViewModel by lazy {
+        ViewModelProvider(this).get(BookListViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        lifecycleScope.launch {
-            progressLayout.visibility = View.VISIBLE
-            val result = withContext(Dispatchers.IO) {
-                BookHttp.searchBook("Dominando o Android")
+        viewModel.state.observe(this, Observer { state ->
+            when (state) {
+                is BookListViewModel.State.StateLoading -> {
+                    progressLayout.visibility = View.VISIBLE
+                }
+                is BookListViewModel.State.StateLoaded -> {
+                    progressLayout.visibility = View.GONE
+                    val bookAdapter = BookAdapter(state.list, this@MainActivity::onVolumeClick)
+                    rvBooks.layoutManager = LinearLayoutManager(this@MainActivity)
+                    rvBooks.adapter = bookAdapter
+                }
+                is BookListViewModel.State.StateError -> {
+                    progressLayout.visibility = View.GONE
+                    if (!state.hasConsumed) {
+                        state.hasConsumed = true
+                        Toast.makeText(
+                            this@MainActivity,
+                            R.string.error_load_books, Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
             }
-            progressLayout.visibility = View.GONE
-            if (result?.items != null) {
-                val bookAdapter = BookAdapter(result.items, this@MainActivity::onVolumeClick)
-                rvBooks.layoutManager = LinearLayoutManager(this@MainActivity)
-                rvBooks.adapter = bookAdapter
-            } else {
-                Toast.makeText(this@MainActivity,
-                    R.string.error_load_books, Toast.LENGTH_LONG).show()
-            }
-        }
+        })
+        viewModel.loadBooks()
     }
 
     private fun onVolumeClick(volume: Volume) {
