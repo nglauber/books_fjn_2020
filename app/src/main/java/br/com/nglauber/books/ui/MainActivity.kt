@@ -1,8 +1,10 @@
 package br.com.nglauber.books.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.nglauber.books.R
@@ -21,15 +23,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         lifecycleScope.launch {
+            progressLayout.visibility = View.VISIBLE
             val result = withContext(Dispatchers.IO) {
                 BookHttp.searchBook("Dominando o Android")
             }
-            if (result != null) {
+            progressLayout.visibility = View.GONE
+            if (result?.items != null) {
                 val bookAdapter = BookAdapter(result.items, this@MainActivity::onVolumeClick)
                 rvBooks.layoutManager = LinearLayoutManager(this@MainActivity)
                 rvBooks.adapter = bookAdapter
             } else {
-                // TODO erro
+                Toast.makeText(this@MainActivity,
+                    R.string.error_load_books, Toast.LENGTH_LONG).show()
             }
         }
     }

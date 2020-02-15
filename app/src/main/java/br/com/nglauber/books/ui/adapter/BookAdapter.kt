@@ -1,6 +1,5 @@
 package br.com.nglauber.books.ui.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,7 +27,6 @@ class BookAdapter(
     override fun onBindViewHolder(holder: BookVH, position: Int) {
         val volume = list[position]
         holder.run {
-            Log.d("NGVL", volume.volumeInfo.imageLinks?.smallThumbnail ?: "vazio")
             Picasso.get()
                 .load(volume.volumeInfo.imageLinks?.smallThumbnail)
                 .into(imgCover)
