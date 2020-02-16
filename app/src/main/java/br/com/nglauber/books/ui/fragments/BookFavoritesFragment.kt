@@ -41,6 +41,7 @@ class BookFavoritesFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        searchView.visibility = View.GONE
         viewModel.favoriteBooks.observe(
             viewLifecycleOwner,
             Observer { volumeList ->
