@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Books</string>
     <string name="detail_title">Detalhes do Livro</string>
-    <string name="loading_text">Carregando...</string>
+    <string name="loading_text">Carregando…</string>
     <string name="error_load_books">Erro ao carregar lista de livros.</string>
+    <string name="tab_books">Livros</string>
+    <string name="tab_favorites">Favoritos</string>
 </resources>

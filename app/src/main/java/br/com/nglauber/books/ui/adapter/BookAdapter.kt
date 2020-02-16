@@ -27,9 +27,11 @@ class BookAdapter(
     override fun onBindViewHolder(holder: BookVH, position: Int) {
         val volume = list[position]
         holder.run {
-            Picasso.get()
-                .load(volume.volumeInfo.imageLinks?.smallThumbnail)
-                .into(imgCover)
+            if (volume.volumeInfo.imageLinks?.smallThumbnail?.isNotEmpty() == true) {
+                Picasso.get()
+                    .load(volume.volumeInfo.imageLinks.smallThumbnail)
+                    .into(imgCover)
+            }
             txtTitle.text = volume.volumeInfo.title
             txtAuthor.text = volume.volumeInfo.authors?.joinToString() ?: "Nenhum"
             txtPages.text = volume.volumeInfo.pageCount?.toString()

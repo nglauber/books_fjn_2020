@@ -20,6 +20,10 @@ class BookRepository(context: Context) {
         )
     }
 
+    suspend fun isFavorite(id: String): Boolean {
+        return database.getBookDao().isFavorite(id) > 0
+    }
+
     fun allFavorites(): Flow<List<Volume>> {
         return database.getBookDao()
             .allFavorites()

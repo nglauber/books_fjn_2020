@@ -1,6 +1,5 @@
 package br.com.nglauber.books.ui.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -65,8 +64,6 @@ class BookListFragment: Fragment() {
     }
 
     private fun onVolumeClick(volume: Volume) {
-        val intencao = Intent(requireContext(), BookDetailActivity::class.java)
-        intencao.putExtra("book", volume)
-        startActivity(intencao)
+        BookDetailActivity.openWithVolume(requireContext(), volume)
     }
 }

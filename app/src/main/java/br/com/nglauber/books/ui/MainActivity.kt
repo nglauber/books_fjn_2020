@@ -15,11 +15,13 @@ class MainActivity : AppCompatActivity() {
 
         pager.adapter = BookPagerAdapter(this)
         TabLayoutMediator(tabs, pager) { tab, position ->
-            tab.text = if (position == 0) {
-                "Livros"
-            } else {
-                "Favoritos"
-            }
+            tab.setText(
+                if (position == 0) {
+                    R.string.tab_books
+                } else {
+                    R.string.tab_favorites
+                }
+            )
         }.attach()
     }
 }
