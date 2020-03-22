@@ -1,39 +1,32 @@
 package br.com.nglauber.books.ui.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import br.com.nglauber.books.http.BookHttp
 import br.com.nglauber.books.model.Volume
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class BookListViewModel: ViewModel() {
 
-    private val _state = MutableLiveData<State>()
-    val state: LiveData<State>
-        get() = _state
-
-    fun loadBooks() {
-        if (state.value != null) return
-
-        search("Dominando o Android")
+    private var query = MutableLiveData<String>()
+    val state = query.switchMap {
+        liveData {
+            emit(State.StateLoading)
+            val result = withContext(Dispatchers.IO) {
+                BookHttp.searchBook(it)
+            }
+            emit(
+                if (result?.items != null) {
+                    State.StateLoaded(result.items)
+                } else {
+                    State.StateError(Exception("No results"), false)
+                }
+            )
+        }
     }
 
     fun search(query: String) {
-        viewModelScope.launch {
-            _state.value = State.StateLoading
-            val result = withContext(Dispatchers.IO) {
-                BookHttp.searchBook(query)
-            }
-            if (result?.items != null) {
-                _state.value = State.StateLoaded(result.items)
-            } else {
-                _state.value = State.StateError(Exception("No results"), false)
-            }
-        }
+        this.query.value = query
     }
 
     sealed class State {

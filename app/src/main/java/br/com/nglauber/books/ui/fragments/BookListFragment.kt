@@ -61,7 +61,9 @@ class BookListFragment: Fragment() {
                 }
             }
         })
-        viewModel.loadBooks()
+        if (viewModel.state.value == null) {
+            viewModel.search("Dominando o Android")
+        }
 
         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
